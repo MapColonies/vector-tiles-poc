@@ -1,0 +1,26 @@
+[webserver]
+port = ":7070"
+
+[[providers]]
+name = "osm"       # provider name is referenced from map layers (required)
+type = "postgis"            # the type of data provider must be "postgis" for this data provider (required)
+
+uri = "postgresql://postgres:postgres@vector-tiles-pg:5432/osm" # PostGIS connection string (required)
+srid = 4326
+
+    [[providers.layers]]
+    name = "roads"                      # will be encoded as the layer name in the tile
+    tablename = "public.roads"    # sql or table_name are required
+    geometry_fieldname = "geom"           # geom field. default is geom
+    id_fieldname = "way_id"                  # geom id field. default is gid
+    srid = 4326
+
+[[maps]]
+name = "osm"                             # used in the URL to reference this map (/maps/:map_name)
+tile_buffer = 0                             # number of pixels to extend a tile's clipping area
+bounds = [-180.0, -180.0, 180.0, 180.0]               # map bounds in WGS84
+
+    [[maps.layers]]
+    provider_layer = "osm.roads" # must match a data provider layer
+    min_zoom = 8                           # minimum zoom level to include this layer
+    max_zoom = 16                           # maximum zoom level to include this layer

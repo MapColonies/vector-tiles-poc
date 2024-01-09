@@ -1,0 +1,40 @@
+[service.mvt]
+viewer = true
+
+[[datasource]]
+name = "osm"
+dbconn = "postgresql://postgres:postgres@vector-tiles-pg/osm"
+
+[grid]
+predefined = "wgs84"
+
+[[tileset]]
+name = "osm"
+cache_limits = { no_cache = true }
+
+[[tileset.layer]]
+name = "roads"
+datasource = "osm"
+geometry_field = "geom"
+geometry_type = "LINESTRING"
+no_transform = false
+table_name = "roads"
+# Clip polygons with a buffer
+buffer_size = 10
+simplify = false
+#  # Queries for different zoom levels:
+  [[tileset.layer.query]]
+  minzoom = 0
+  sql = """
+    SELECT way_id, name, ref, surface, geom
+    FROM roads
+    WHERE ST_setSRID(geom,4326) && ST_MakeEnvelope(34.18984640382817,
+          31.187980904397236,34.5370299088753,
+          31.665413334708845,4326) limit 1000"""
+          
+#[cache.file]
+# base = "/var/cache/mvtcache"
+
+[webserver]
+bind = "0.0.0.0"
+port = 9090

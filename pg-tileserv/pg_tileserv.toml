@@ -1,0 +1,6 @@
+[CoordinateSystem]
+SRID = 4326
+Xmin = -180
+Ymin = -180
+Xmax = 180
+Ymax = 180
