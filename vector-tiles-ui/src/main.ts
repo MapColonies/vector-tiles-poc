@@ -79,8 +79,8 @@ fetch(
   .then((text) => {
     const result = parser.read(text);
     const options = optionsFromCapabilities(result, {
-      // layer: "ARTZI_MZ-OrthophotoBest",
-      layer: 'goat_ofer_layer-Orthophoto',
+      layer: "ARTZI_MZ-OrthophotoBest",
+      // layer: 'goat_ofer_layer-Orthophoto',
       matrixSet: "WorldCRS84",
     });
 
@@ -106,12 +106,17 @@ fetch(
 
         format: new MVT(),
         projection: "EPSG:4326",
+        // pg-tileserv
         // url: 'http://localhost:7800/public.wgs84_res/{z}/{x}/{y}.pbf'
-        // url: 'http://localhost:7800/public.roads/{z}/{x}/{y}.pbf'
+        url: 'http://localhost:7800/public.roads/{z}/{x}/{y}.pbf'
+        // martin
         // url: 'http://0.0.0.0:4000/roads/{z}/{x}/{y}'
+        // tipg
         // url: "http://localhost:8080/collections/public.roads/tiles/WorldCRS84Quad/{z}/{x}/{y}",
+        // t-rex
         // url: 'http://localhost:9090/osm/{z}/{x}/{y}.pbf'
-        url: 'http://localhost:7070/maps/osm/{z}/{x}/{y}.pbf'
+        // tegola
+        // url: 'http://localhost:7070/maps/osm/{z}/{x}/{y}.pbf'
         
       }),
       style: [

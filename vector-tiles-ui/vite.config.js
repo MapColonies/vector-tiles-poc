@@ -6,7 +6,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        cesium: resolve(__dirname, 'cesium.html'),
+        mapbox: resolve(__dirname, 'mapbox.html'),
+        arcgis: resolve(__dirname, 'arcgis.html'),
       },
     },
   },
