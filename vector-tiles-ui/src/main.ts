@@ -4,11 +4,11 @@ import Map from "ol/Map.js";
 import OSM from "ol/source/OSM.js";
 import TileLayer from "ol/layer/Tile.js";
 import MVT from "ol/format/MVT.js";
-import XYZ from "ol/source/XYZ";
+import VectorTile from 'ol/layer/VectorTile.js';
 import TileDebug from "ol/source/TileDebug.js";
 import WMTS, { optionsFromCapabilities } from "ol/source/WMTS.js";
 import WMTSCapabilities from "ol/format/WMTSCapabilities.js";
-
+import WebGLVectorTileLayerRenderer from 'ol/renderer/webgl/VectorTileLayer.js';
 import OGCVectorTile from "ol/source/OGCVectorTile.js";
 import VectorTileSource from "ol/source/VectorTile";
 import VectorTileLayer from "ol/layer/VectorTile.js";
@@ -16,9 +16,9 @@ import { Stroke, Style } from "ol/style.js";
 import View from "ol/View.js";
 import { MapBrowserEvent } from "ol";
 import TileGrid from "ol/tilegrid/TileGrid";
+import {asArray} from 'ol/color.js';
+import {packColor, parseLiteralStyle} from 'ol/webgl/styleparser.js';
 
-const TOKEN =
-  "";
 
 const parser = new WMTSCapabilities();
 
@@ -70,10 +70,53 @@ const wgs84onebyonegrid = new TileGrid({
   tileSize: [256, 256],
 });
 
+const result = parseLiteralStyle({
+  'fill-color': ['get', 'fillColor'],
+  'stroke-color': ['get', 'strokeColor'],
+  'stroke-width': ['get', 'strokeWidth'],
+  'circle-radius': 4,
+  'circle-fill-color': '#777',
+});
+
+class WebGLVectorTileLayer extends VectorTile {
+  createRenderer() {
+    return new WebGLVectorTileLayerRenderer(this, {
+      style: {
+        builder: result.builder,
+        attributes: {
+          fillColor: {
+            size: 2,
+            callback: (feature) => {
+              // const style = this.getStyle()(feature, 1)[0];
+              const style = undefined
+              const color = '#eee';
+              return packColor(color);
+            },
+          },
+          strokeColor: {
+            size: 2,
+            callback: (feature) => {
+              const color = '#000';
+              return packColor(color);
+            },
+          },
+          strokeWidth: {
+            size: 3,
+            callback: (feature) => {
+              // const style = this.getStyle()(feature, 1)[0];
+              return 3;
+            },
+          },
+        },
+      },
+    });
+  }
+}
+
 
 fetch(
   "https://raster-mapproxy-int-nginx-route-integration.apps.j1lk3njp.eastus.aroapp.io/api/raster/v1/wmts/1.0.0/WMTSCapabilities.xml?token=" +
-    TOKEN
+  import.meta.env.VITE_TOKEN
 )
   .then((response) => response.text())
   .then((text) => {
@@ -87,12 +130,13 @@ fetch(
     options!.urls = options!.urls?.map((url) => {
       console.log(url);
       
-      return url.concat("?token=" + TOKEN);
+      return url.concat("?token=" + import.meta.env.VITE_TOKEN);
     });
 
     console.log('wgs84',options?.tileGrid?.getExtent(), options?.tileGrid?.getResolutions());
 
-    const vectorTileLayer = new VectorTileLayer({
+    // const vectorTileLayer = new VectorTileLayer({
+    const vectorTileLayer = new WebGLVectorTileLayer({
 
       //   source: new OGCVectorTile({
       //     format: new MVT(),

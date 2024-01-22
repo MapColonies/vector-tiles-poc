@@ -4,6 +4,7 @@ body {
   height: 100%;
 }
 
+#viewerDiv
 #map {
   position: absolute;
   top: 0;
